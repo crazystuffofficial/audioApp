@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Art Generator</title>
+</head>
+<body>
+  <input type="file" accept="audio/*" id="audioInput" />
+  <canvas id="canvas" width="800" height="400"></canvas>
+
+  <script>
+    document.getElementById('audioInput').addEventListener('change', handleFile);
+
+    function handleFile(event) {
+      const fileInput = event.target;
+      const audioFile = fileInput.files[0];
+
+      if (audioFile) {
+        const audioBlobURL = URL.createObjectURL(audioFile);
+        createAudioContext(audioBlobURL);
+      }
+    }
+
+    function createAudioContext(audioBlobURL) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const canvas = document.getElementById('canvas');
+      const canvasContext = canvas.getContext('2d');
+      const audioElement = new Audio(audioBlobURL);
+
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+
+      audioElement.addEventListener('canplay', () => {
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        audioElement.play();
+
+        function renderFrame() {
+          analyser.getByteFrequencyData(dataArray);
+          drawArt(dataArray, canvasContext);
+
+          requestAnimationFrame(renderFrame);
+        }
+
+        renderFrame();
+      });
+    }
+
+    function drawArt(dataArray, canvasContext) {
+      const width = canvas.width;
+      const height = canvas.height;
+
+      canvasContext.clearRect(0, 0, width, height);
+
+      const barWidth = (width / dataArray.length) * 2.5;
+      let barHeight;
+      let x = 0;
+
+      for (let i = 0; i < dataArray.length; i++) {
+        barHeight = dataArray[i] / 2;
+
+        canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        canvasContext.fillRect(x, height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+      }
+    }
+  </script>
+</body>
+</html>
