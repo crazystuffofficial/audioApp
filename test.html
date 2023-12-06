@@ -6,11 +6,17 @@
   <title>Folder Upload Example</title>
 </head>
 <body>
-  <input type="file" id="folderInput" webkitdirectory directory multiple />
 
+  <input type="file" id="folderInput" webkitdirectory directory multiple />
+<table></table>
   <script>
     document.getElementById('folderInput').addEventListener('change', handleFolder);
-
+  function appendRow(html) {
+  var x = document.querySelector("table");
+  var y = document.createElement("tr");
+  y.innerHTML = html;
+  x.appendChild(y);
+}
     function handleFolder(event) {
       const files = event.target.files;
 
@@ -22,7 +28,7 @@
 
           worker.onmessage = function (e) {
             const url = e.data;
-            console.log(`File ${i + 1}:\nName: ${file.name}\nType: ${file.type}\nSize: ${file.size} bytes\nLast Modified: ${file.lastModified}\nRaw Data:`, url);
+            appendRow("<audio src='" + url + "'></audio>");
           };
 
           worker.postMessage({ file, index: i });
