@@ -28,7 +28,7 @@
 
           worker.onmessage = function (e) {
             const url = e.data;
-            appendRow("<audio src='" + url + "'></audio>");
+            appendRow("<p>" + file.name + "<audio src='" + url + "' controls></audio></p>");
           };
 
           worker.postMessage({ file, index: i });
