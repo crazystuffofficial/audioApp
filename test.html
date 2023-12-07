@@ -17,18 +17,24 @@
   y.innerHTML = html;
   x.appendChild(y);
 }
+function changeRow(row, html) {
+  var y = document.querySelectorAll("tr")[row];
+  y.innerHTML = html;
+}
+    
     function handleFolder(event) {
       const files = event.target.files;
 
       if (files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-
+          appendRow("Loading file");
           const worker = new Worker('worker.js');
 
           worker.onmessage = function (e) {
-            const url = e.data;
-            appendRow("<p>" + file.name + "<audio src='" + url + "' controls></audio></p>");
+            const url = e.data[0];
+            const index = e.data[1];
+            changeRow(index, "<p>" + file.name + "<audio src='" + url + "' controls></audio></p>");
           };
 
           worker.postMessage({ file, index: i });
