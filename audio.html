@@ -6,29 +6,32 @@
   <title>Audio Art Generator</title>
 </head>
 <body>
-  <input type="file" accept="audio/*" id="audioInput" />
+  <audio id="audio" src="https://example.com" controls></audio>
   <canvas id="canvas" width="800" height="400"></canvas>
 
   <script>
-    document.getElementById('audioInput').addEventListener('change', handleFile);
+    // Commented out the file input related code
+    // document.getElementById('audioInput').addEventListener('change', handleFile);
 
-    function handleFile(event) {
-      const fileInput = event.target;
-      const audioFile = fileInput.files[0];
+    // Commented out the file input related code
+    // function handleFile(event) {
+    //   const fileInput = event.target;
+    //   const audioFile = fileInput.files[0];
 
-      if (audioFile) {
-        const audioBlobURL = URL.createObjectURL(audioFile);
-        createAudioContext(audioBlobURL);
-      }
-    }
+    //   if (audioFile) {
+    //     const audioBlobURL = URL.createObjectURL(audioFile);
+    //     createAudioContext(audioBlobURL);
+    //   }
+    // }
 
-    function createAudioContext(audioBlobURL) {
+    // Changed function to accept audio element instead of blob URL
+    function createAudioContext(audioElement) {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const canvas = document.getElementById('canvas');
       const canvasContext = canvas.getContext('2d');
-      const audioElement = new Audio(audioBlobURL);
 
+      // Removed the creation of Audio element and connected directly to the existing audio element
       const source = audioContext.createMediaElementSource(audioElement);
       source.connect(analyser);
       analyser.connect(audioContext.destination);
@@ -70,6 +73,9 @@
         x += barWidth + 1;
       }
     }
+
+    // Call createAudioContext with the existing audio element
+    createAudioContext(document.getElementById('audio'));
   </script>
 </body>
 </html>
