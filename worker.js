@@ -7,9 +7,9 @@ self.onmessage = function (e) {
       reader.onload = function (e) {
         const rawData = e.target.result;
         const theBlob = new Blob([new Uint8Array(rawData)], { type: file.type });
-        const url = URL.createObjectURL(theBlob);
+        const object = [URL.createObjectURL(theBlob), index];
 
-        self.postMessage(url);
+        self.postMessage(object);
       };
 
       reader.readAsArrayBuffer(file);
