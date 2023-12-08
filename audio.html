@@ -6,14 +6,15 @@
   <title>Audio Art Generator</title>
 </head>
 <body>
-  <audio id="audio" src="https://www.w3schools.com/html/horse.ogg" controls></audio>
+  <!-- Removed controls attribute to prevent user play/pause controls -->
+  <audio id="audio" src="https://example.com"></audio>
   <canvas id="canvas" width="800" height="400"></canvas>
 
   <script>
-    // Commented out the file input related code
+    // Removed the file input related code
     // document.getElementById('audioInput').addEventListener('change', handleFile);
 
-    // Commented out the file input related code
+    // Removed the file input related code
     // function handleFile(event) {
     //   const fileInput = event.target;
     //   const audioFile = fileInput.files[0];
@@ -24,34 +25,43 @@
     //   }
     // }
 
-    // Changed function to accept audio element instead of blob URL
     function createAudioContext(audioElement) {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const canvas = document.getElementById('canvas');
       const canvasContext = canvas.getContext('2d');
 
-      // Removed the creation of Audio element and connected directly to the existing audio element
       const source = audioContext.createMediaElementSource(audioElement);
       source.connect(analyser);
       analyser.connect(audioContext.destination);
 
-      audioElement.addEventListener('canplay', () => {
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
+      // Commented out autoplay, added play button
+      // audioElement.addEventListener('canplay', () => {
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
 
+      // Removed autoplay
+      // audioElement.play();
+
+      // Added play button and play function
+      const playButton = document.createElement('button');
+      playButton.innerText = 'Play';
+      playButton.addEventListener('click', () => {
         audioElement.play();
-
-        function renderFrame() {
-          analyser.getByteFrequencyData(dataArray);
-          drawArt(dataArray, canvasContext);
-
-          requestAnimationFrame(renderFrame);
-        }
-
-        renderFrame();
+        playButton.style.display = 'none'; // Hide play button after play
       });
+      document.body.appendChild(playButton);
+
+      function renderFrame() {
+        analyser.getByteFrequencyData(dataArray);
+        drawArt(dataArray, canvasContext);
+
+        requestAnimationFrame(renderFrame);
+      }
+
+      renderFrame();
+      // });
     }
 
     function drawArt(dataArray, canvasContext) {
